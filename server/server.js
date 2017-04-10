@@ -14,6 +14,20 @@ app.use(express.static(publicPath)); // html template path
 io.on('connection', (socket) => {
     console.log('New user connected');
 
+    socket.emit('newMessage', {
+       from : 'Admin',
+       text: 'Welcome to the chat app',
+       createdAt: new Date().getTime()
+    });
+
+    socket.broadcast.emit('newMessage',{
+        from: 'Admin',
+        text: 'New user joined',
+        createdAt: new Date().getTime()
+    });
+
+
+
     socket.on('createMessage', (message) => { // receiving
         console.log('createMessage ', message);
         io.emit('newMessage', { // io.emit send message to all the connections i.e. room main chat
@@ -21,6 +35,12 @@ io.on('connection', (socket) => {
            text: message.text,
            createdAt: new Date().getTime()
         });
+
+        // socket.broadcast.emit('newMessage', { // send message to all the connections excluding me!
+        //        from: message.from,
+        //        text: message.text,
+        //        createdAt: new Date().getTime()
+        //     });
     });
 
     socket.on('disconnect', () => {
